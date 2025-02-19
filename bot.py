@@ -10,7 +10,22 @@ import urllib.request
 
 import json
 
+import os
+import threading
+from flask import Flask
 
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is running!"
+
+def run_flask():
+    port = int(os.environ.get("PORT", 5000))  # Render вимагає змінну PORT
+    os.system(f"gunicorn -b 0.0.0.0:{port} bot:app")  # Запускає сервер Gunicorn
+
+# Запускаємо сервер Flask у фоновому потоці
+threading.Thread(target=run_flask).start()
 
 CR_TOKEN  = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjEzNDQ3Y2M3LWE0NDMtNDQ3OC05ZmM2LTRkYzA1YjgxZjk4YiIsImlhdCI6MTczOTk0NTg1NSwic3ViIjoiZGV2ZWxvcGVyLzIxZTg1YjhhLTYxNmYtYmRhYS0zMzNlLTE1NWI1ODI3OTBhNiIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyIzNS4xNjAuMTIwLjEyNiIsIjQ0LjIzMy4xNTEuMjciLCIzNC4yMTEuMjAwLjg1Il0sInR5cGUiOiJjbGllbnQifV19.N9JxImBP0qOqsUeVzbyVJ0jJi-f7dGDOO1lj5Hxp4AsZs3i2yJdk8M2JqZfE2uxh6j9WrrqG7aylk9vQnsimWg"
 BASE_URL = "https://api.clashroyale.com/v1"
