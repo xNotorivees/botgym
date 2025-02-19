@@ -13,9 +13,23 @@ import json
 import time
 import requests
 import threading
+from flask import Flask
 
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is running!"
+
+def run_flask():
+    port = int(os.environ.get("PORT", 5000))  # Render вимагає змінну PORT
+    app.run(host="0.0.0.0", port=port)
+
+threading.Thread(target=run_flask).start()
+
+# 3️⃣ Автоматичний Keep-Alive пінг (щоб Render не "вбивав" процес через неактивність)
 def keep_alive():
-    url = "https://botgym.onrender.com"  
+    url = "https://botgym.onrender.com" 
     while True:
         try:
             requests.get(url)
@@ -24,7 +38,6 @@ def keep_alive():
             print(f"⚠️ Помилка пінгу: {e}")
         time.sleep(240)  # Пінг кожні 4 хвилин
 
-# Запускаємо keep_alive у фоновому потоці
 threading.Thread(target=keep_alive).start()
 
 CR_TOKEN  = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjEzNDQ3Y2M3LWE0NDMtNDQ3OC05ZmM2LTRkYzA1YjgxZjk4YiIsImlhdCI6MTczOTk0NTg1NSwic3ViIjoiZGV2ZWxvcGVyLzIxZTg1YjhhLTYxNmYtYmRhYS0zMzNlLTE1NWI1ODI3OTBhNiIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyIzNS4xNjAuMTIwLjEyNiIsIjQ0LjIzMy4xNTEuMjciLCIzNC4yMTEuMjAwLjg1Il0sInR5cGUiOiJjbGllbnQifV19.N9JxImBP0qOqsUeVzbyVJ0jJi-f7dGDOO1lj5Hxp4AsZs3i2yJdk8M2JqZfE2uxh6j9WrrqG7aylk9vQnsimWg"
@@ -36,6 +49,9 @@ BOT_TOKEN = "5038305798:AAHtfwS9YpdVuUbT5zc5ee_1c-6wMhMa-GI"
 CLAN_TAG = "#QUP0RL88"
 
 bot = telebot.TeleBot(BOT_TOKEN, parse_mode=None)
+
+bot.delete_webhook()  # Очищує Webhook перед запуском polling
+time.sleep(1)  # Невелика пауза перед запуском polling
 
 u=list('')
 
@@ -289,6 +305,5 @@ def send_welcome(message):
 def echo_all(message):
 	bot.reply_to(message, message.text)
 
-bot.delete_webhook()  # Очищує Webhook перед запуском polling
-time.sleep(1)  # Невелика пауза перед запуском polling
+
 bot.infinity_polling()  # Запускає бота
